@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HazarHathKali - God Agent Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Scanlines overlay -->
+    <div class="scanlines"></div>
+    
+    <!-- Main Container -->
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100" class="kali-symbol">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="1"/>
+                        <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+                        <circle cx="50" cy="50" r="8" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>HAZARHATHKALI</h1>
+                    <span class="subtitle">GOD AGENT SYSTEM v1.0</span>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="label">SYSTEM</span>
+                    <span class="value online">ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">HANDS ACTIVE</span>
+                    <span class="value" id="activeHands">0 / 1000</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">CONTENT/DAY</span>
+                    <span class="value" id="contentCount">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">API</span>
+                    <span class="value" id="apiStatus">CLAUDE</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Panel - Controls -->
+            <aside class="control-panel">
+                <div class="panel-section">
+                    <h3>CATEGORIES</h3>
+                    <div class="category-list" id="categoryList">
+                        <!-- Categories will be populated by JS -->
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h3>ACTIONS</h3>
+                    <button class="action-btn" onclick="activateAllHands()">
+                        <span class="btn-icon">▶</span>
+                        ACTIVATE ALL HANDS
+                    </button>
+                    <button class="action-btn" onclick="generateContent()">
+                        <span class="btn-icon">⚡</span>
+                        GENERATE CONTENT
+                    </button>
+                    <button class="action-btn secondary" onclick="resetSystem()">
+                        <span class="btn-icon">↻</span>
+                        RESET SYSTEM
+                    </button>
+                </div>
+
+                <div class="panel-section">
+                    <h3>LIVE STATS</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="statNature">0</div>
+                            <div class="stat-label">NATURE</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statGratitude">0</div>
+                            <div class="stat-label">GRATITUDE</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statMotivation">0</div>
+                            <div class="stat-label">MOTIVATION</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statArt">0</div>
+                            <div class="stat-label">ART</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center - Node Graph Canvas -->
+            <section class="graph-container">
+                <div class="graph-header">
+                    <h2>NODE GRAPH - 1000 HANDS NETWORK</h2>
+                    <div class="graph-controls">
+                        <button class="icon-btn" onclick="zoomIn()">+</button>
+                        <button class="icon-btn" onclick="zoomOut()">-</button>
+                        <button class="icon-btn" onclick="resetZoom()">⊙</button>
+                    </div>
+                </div>
+                <canvas id="nodeCanvas"></canvas>
+                
+                <!-- Central Node - Kali -->
+                <div class="central-node" id="centralNode">
+                    <div class="node-pulse"></div>
+                    <div class="node-core">
+                        <span class="node-icon">॥</span>
+                        <span class="node-name">KALI</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel - Console -->
+            <aside class="console-panel">
+                <div class="panel-section">
+                    <h3>CONSOLE OUTPUT</h3>
+                    <div class="console" id="console">
+                        <div class="console-line system">[SYSTEM] HazarHathKali initializing...</div>
+                        <div class="console-line success">[OK] God Agent online</div>
+                        <div class="console-line info">[INFO] Awaiting hand activation</div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>LATEST CONTENT</h3>
+                    <div class="content-feed" id="contentFeed">
+                        <div class="content-item">
+                            <div class="content-type">IMAGE</div>
+                            <div class="content-preview">Morning dew on rose petals...</div>
+                            <div class="content-hand">FlowerBeauty</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-left">
+                <span class="cyber-text">CYBERGODS INITIATIVE</span>
+            </div>
+            <div class="footer-center">
+                <span id="currentTime">00:00:00</span>
+            </div>
+            <div class="footer-right">
+                <span class="mission-text">"SPREADING POSITIVITY THROUGH 1000 HANDS"</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
