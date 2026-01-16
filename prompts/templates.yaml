@@ -1,0 +1,93 @@
+# Positivity Templates
+# Master template file for all 1000 hands
+
+image_styles:
+  # General aesthetic styles
+  ethereal:
+    description: "Dreamy, soft, otherworldly"
+    modifiers: "soft lighting, ethereal glow, dreamy atmosphere, pastel colors"
+
+  vibrant:
+    description: "Bold, energetic, eye-catching"
+    modifiers: "vibrant colors, high saturation, dynamic composition, energetic"
+
+  peaceful:
+    description: "Calm, serene, relaxing"
+    modifiers: "calm atmosphere, soft tones, peaceful mood, gentle lighting"
+
+  spiritual:
+    description: "Divine, sacred, mystical"
+    modifiers: "sacred geometry, divine light, mystical aura, spiritual essence"
+
+text_templates:
+  affirmation:
+    format: "I am {positive_quality}. I attract {positive_outcome}."
+    examples:
+      - "I am worthy. I attract abundance."
+      - "I am peaceful. I attract harmony."
+      - "I am strong. I attract success."
+
+  gratitude:
+    format: "Today I am grateful for {blessing}."
+    examples:
+      - "Today I am grateful for the breath in my lungs."
+      - "Today I am grateful for the love in my life."
+      - "Today I am grateful for this new opportunity."
+
+  motivation:
+    format: "{action_verb} your {goal}. {empowering_statement}."
+    examples:
+      - "Chase your dreams. The universe is cheering for you."
+      - "Embrace your journey. Every step matters."
+      - "Trust your path. You are exactly where you need to be."
+
+hashtag_collections:
+  positivity:
+    - "#PositiveVibes"
+    - "#SpreadLove"
+    - "#GoodVibesOnly"
+    - "#ChooseHappiness"
+    - "#BeTheLight"
+
+  wellness:
+    - "#MentalHealthMatters"
+    - "#SelfCare"
+    - "#Mindfulness"
+    - "#InnerPeace"
+    - "#HealingJourney"
+
+  nature:
+    - "#NatureLover"
+    - "#EarthBeauty"
+    - "#NatureHeals"
+    - "#OutdoorTherapy"
+    - "#GreenVibes"
+
+  spiritual:
+    - "#SpiritualAwakening"
+    - "#HigherSelf"
+    - "#DivineLove"
+    - "#SoulJourney"
+    - "#CosmicEnergy"
+
+platform_specs:
+  instagram:
+    image_size: "1080x1080"
+    story_size: "1080x1920"
+    max_hashtags: 30
+    caption_limit: 2200
+
+  twitter:
+    image_size: "1200x675"
+    text_limit: 280
+    max_hashtags: 5
+
+  linkedin:
+    image_size: "1200x627"
+    text_limit: 3000
+    tone: "professional"
+
+  youtube_shorts:
+    video_size: "1080x1920"
+    duration: "60s"
+    description_limit: 5000

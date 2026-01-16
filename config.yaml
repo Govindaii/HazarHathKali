@@ -1,0 +1,73 @@
+# HazarHathKali Configuration
+
+app:
+  name: "HazarHathKali"
+  version: "0.1.0"
+  description: "1000 Hands of Positivity"
+
+# God Agent Settings
+orchestrator:
+  max_agents: 1000
+  active_agents: 10  # Start with 10, scale up
+  content_per_day: 50
+  
+# AI Generation
+generation:
+  text_model: "gemini-1.5-flash"
+  image_model: "comfyui"  # or "dalle" for API
+  use_local_gpu: true  # RTX 4090
+  
+# Social Media Platforms
+platforms:
+  instagram:
+    enabled: true
+    posts_per_day: 10
+  linkedin:
+    enabled: true
+    posts_per_day: 5
+  twitter:
+    enabled: true
+    posts_per_day: 20
+  youtube_shorts:
+    enabled: false
+    posts_per_day: 3
+
+# Scheduling
+schedule:
+  timezone: "Asia/Kolkata"
+  start_hour: 6
+  end_hour: 23
+  interval_minutes: 30
+
+# Content Categories
+categories:
+  - name: "nature"
+    agents: 100
+    description: "Beauty in nature - flowers, sunsets, mountains"
+  - name: "gratitude"
+    agents: 100
+    description: "Daily gratitude and thankfulness"
+  - name: "motivation"
+    agents: 100
+    description: "Uplifting quotes and stories"
+  - name: "art"
+    agents: 100
+    description: "Creative expression and inspiration"
+  - name: "wellness"
+    agents: 100
+    description: "Mental health and meditation"
+  - name: "kindness"
+    agents: 100
+    description: "Acts of kindness stories"
+  - name: "humor"
+    agents: 100
+    description: "Positive memes and jokes"
+  - name: "spirituality"
+    agents: 100
+    description: "Wisdom and philosophy"
+  - name: "science"
+    agents: 100
+    description: "Wonder of the universe"
+  - name: "music"
+    agents: 100
+    description: "Healing sounds and melodies"
