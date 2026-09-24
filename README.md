@@ -1,91 +1,53 @@
-# 🕉️ HazarHathKali - The 1000 Hands of Positivity
+# 🕉️ HazarHathKali: The 1000 Hands of Positivity
 
 > *"Algorithm ne brain rot diya, Kali Maa 1000 haathon se positivity degi"*
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow.svg)
+**HazarHathKali** is a web app inspired by the Hazar Hath Kali murti. The Devi stands at the centre with a fan of 1000 hands behind her, and every hand is an AI companion you can chat with. Each one has its own purpose and voice, and they are all there to counter doom scrolling with something uplifting.
 
-## 🎯 Vision
+## ✨ What it does
 
-**HazarHathKali** is a God Agent that orchestrates 1000 AI agents - each "hand" spreads positivity in a unique way across social media. The mission is to counter doom scrolling and brain rot by flooding the algorithm with beautiful, uplifting content.
+- **The Devi and her 1000 hands**: turquoise face with a third eye, gold crown, red sari, marigold garlands, trishul and sword. Tap any hand to talk to it, or tap the Devi for a random hand.
+- **1000 unique companions**: 10 realms × 10 focuses × 10 voices, for example *Chai Friend*, *Raga Yogi* or *Exam Coach*.
+- **Prompt-engineered hands**: every hand has a structured system prompt covering its identity, mission, voice, reply shape and safety boundaries. Open "See this hand's prompt" in any chat to read it.
+- **Bring your own API key**: Google Gemini (free key), Anthropic Claude or OpenAI. The key stays in your browser and is sent only to that provider.
+- Search, realm filters, and chat history saved for each hand. Works on phones.
 
-## 🏗️ Architecture
+| Realm | Examples |
+|-------|----------|
+| Spirituality | Gita, Kabir, Buddha, Rumi, Diya |
+| Science | Cosmos, Neuron, Rocket, Light |
+| Wellness | Pranayama, Sleep, Calm, Detox |
+| Nature | Sunrise, Monsoon, Lotus, Banyan |
+| Music | Raga, Tabla, Bansuri, Bollywood |
+| Humor | Pun, Desi Mom, Cricket, Jugaad |
+| Gratitude | Morning, Family, Chai, Tiny Joys |
+| Motivation | Exam, Career, Comeback, First Step |
+| Kindness | Stranger, Elder, Stray, Mirror |
+| Art | Rangoli, Doodle, Poetry, Mehendi |
 
-```
-HazarHathKali (God Agent)
-    ├── Prompt Generator Engine
-    ├── 1000 AI Agents (Hands)
-    │   ├── Nature Beauty Agents 🌸
-    │   ├── Gratitude Agents 🙏
-    │   ├── Motivation Agents 💪
-    │   ├── Art & Creativity Agents 🎨
-    │   └── ... 996 more specialized hands
-    ├── Content Scheduler
-    └── Social Media Connectors (IG, LinkedIn, X, YouTube)
-```
+## 🚀 Open it
 
-## 🖐️ The 1000 Hands (Agent Categories)
+- **Website:** https://govindaii.github.io/HazarHathKali/ (served by GitHub Pages from the `docs/` folder on `main`)
+- **On your computer:** open `docs/index.html` in any browser. No install or build step is needed.
 
-| Hand | Purpose | Content |
-|------|---------|---------|
-| 🌸 FlowerBeauty | Beauty in nature | Images |
-| 🙏 ThankfulHeart | Daily gratitude | Text |
-| 💪 RiseUp | Motivation | Text + Images |
-| 🎨 CreativeSpirit | AI art inspiration | Images |
-| 🧘 MindfulMoment | Meditation | Audio + Text |
-| 😊 JoyBringer | Positive humor | Memes |
-| 🕉️ WisdomWhisper | Ancient wisdom | Text |
-| 🌌 CosmicWonder | Universe amazement | Images |
+Get a free Gemini key at https://aistudio.google.com/apikey and paste it in when the app asks.
 
-## 🚀 Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/HazarHathKali.git
-cd HazarHathKali
-
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate  # Windows
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the orchestrator
-python -m kali.orchestrator
-```
-
-## 📁 Project Structure
+## 📁 Project structure
 
 ```
-HazarHathKali/
-├── kali/           # Core God Agent
-├── hands/          # 1000 AI Agent Templates
-├── prompts/        # Positivity Prompt Database
-├── connectors/     # Social Media APIs
-├── generators/     # AI Content Generation
-└── dashboard/      # Web UI
+docs/
+├── index.html     # Page layout
+├── styles.css     # Look and feel
+├── devi.js        # Draws the Devi and her 1000 hands
+├── hands.js       # The 1000 hands and their prompts
+├── providers.js   # Gemini / Claude / OpenAI streaming
+└── app.js         # Hand finder, chat and API key screen
 ```
-
-## 🪷 Web App: Talk to the 1000 Hands
-
-The `docs/` folder is a web app (no install needed). It shows Hazar Hath Kali as in her temple murti (turquoise face, third eye, gold crown, red sari, trishul and sword) with a fan of 1000 hands behind her. Tap any hand to chat with its own AI companion.
-
-- **10 realms × 10 focuses × 10 voices = 1000 unique hands** (e.g. *Chai Friend*, *Raga Yogi*, *Exam Coach*)
-- Every hand has a structured, prompt-engineered system prompt with its mission, voice, reply shape and safety rules (see "See this hand's prompt" in any chat)
-- Bring your own API key: **Google Gemini** (free key), **Anthropic Claude** or **OpenAI**. The key stays in your browser and goes only to that provider.
-
-**Open it**
-- On your computer: open `docs/index.html` in a browser.
-- As a website: in GitHub go to **Settings → Pages**, set *Source* to **Deploy from a branch**, pick **main** and the **/docs** folder, then Save. The site appears at `https://govindaii.github.io/HazarHathKali/`.
-
-Code map: `docs/hands.js` (the 1000 hands and prompt builder), `docs/devi.js` (draws the Devi and her 1000 hands), `docs/providers.js` (Gemini / Claude / OpenAI streaming), `docs/app.js` (finder, chat, key dialog), `docs/styles.css`.
 
 ## 🤝 Part of CyberGods Movement
 
-This project is part of the **CyberGods** initiative - awakening your superconscious self through technology.
+This project is part of the **CyberGods** initiative: awakening your superconscious self through technology.
 
 ## 📜 License
 
-MIT License - Spread positivity freely! 🕉️
+MIT License. Spread positivity freely! 🕉️
