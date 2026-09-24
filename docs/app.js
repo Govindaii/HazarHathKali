@@ -114,7 +114,16 @@
     isMet: (i) => state.visited.has(HANDS[i].n),
     activeIndex: () => (state.active ? state.active.n - 1 : -1),
     reduceMotion,
+    onViewChange: (zoom, maxZoom) => {
+      $('stage').classList.toggle('is-zoomed', zoom > 1);
+      $('zoomOut').disabled = zoom <= 1;
+      $('zoomFit').disabled = zoom <= 1;
+      $('zoomIn').disabled = zoom >= maxZoom - 0.01;
+    },
   });
+  $('zoomIn').addEventListener('click', () => devi.zoomIn());
+  $('zoomOut').addEventListener('click', () => devi.zoomOut());
+  $('zoomFit').addEventListener('click', () => devi.resetView());
 
   // ---------- Stage interactions ----------
   const stage = $('stage');
@@ -128,7 +137,10 @@
 
   deviCanvas.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType || 'mouse'; });
   deviCanvas.addEventListener('pointermove', (e) => {
-    if (e.pointerType && e.pointerType !== 'mouse') return;
+    if ((e.pointerType && e.pointerType !== 'mouse') || e.buttons) {
+      tip.hidden = true;
+      return;
+    }
     const { x, y } = stageXY(e);
     const hit = devi.pick(x, y, false);
     const idx = typeof hit === 'number' ? hit : -1;
@@ -162,6 +174,7 @@
     tip.hidden = true;
   });
   deviCanvas.addEventListener('click', (e) => {
+    if (devi.wasDrag()) return;
     const { x, y } = stageXY(e);
     const hit = devi.pick(x, y, lastPointer !== 'mouse');
     tip.hidden = true;

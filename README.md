@@ -1,53 +1,104 @@
-# 🕉️ HazarHathKali: The 1000 Hands of Positivity
+# HazarHathKali: 1000 Hands of Positivity
 
-> *"Algorithm ne brain rot diya, Kali Maa 1000 haathon se positivity degi"*
+HazarHathKali is a free website where you can chat with 1000 friendly AI helpers.
 
-**HazarHathKali** is a web app inspired by the Hazar Hath Kali murti. The Devi stands at the centre with a fan of 1000 hands behind her, and every hand is an AI companion you can chat with. Each one has its own purpose and voice, and they are all there to counter doom scrolling with something uplifting.
+It is inspired by the Hazar Hath Kali temple murti. The Devi stands in the middle with a fan of 1000 hands behind her. Every hand is a small AI companion with its own name, personality and purpose. They are all there to lift your mood and give you a kinder alternative to endless scrolling.
 
-## ✨ What it does
+**Open the website:** https://govindaii.github.io/HazarHathKali/
 
-- **The Devi and her 1000 hands**: turquoise face with a third eye, gold crown, red sari, marigold garlands, trishul and sword. Tap any hand to talk to it, or tap the Devi for a random hand.
-- **1000 unique companions**: 10 realms × 10 focuses × 10 voices, for example *Chai Friend*, *Raga Yogi* or *Exam Coach*.
-- **Prompt-engineered hands**: every hand has a structured system prompt covering its identity, mission, voice, reply shape and safety boundaries. Open "See this hand's prompt" in any chat to read it.
-- **Bring your own API key**: Google Gemini (free key), Anthropic Claude or OpenAI. The key stays in your browser and is sent only to that provider.
-- Search, realm filters, and chat history saved for each hand. Works on phones.
+---
 
-| Realm | Examples |
-|-------|----------|
-| Spirituality | Gita, Kabir, Buddha, Rumi, Diya |
-| Science | Cosmos, Neuron, Rocket, Light |
-| Wellness | Pranayama, Sleep, Calm, Detox |
-| Nature | Sunrise, Monsoon, Lotus, Banyan |
-| Music | Raga, Tabla, Bansuri, Bollywood |
-| Humor | Pun, Desi Mom, Cricket, Jugaad |
-| Gratitude | Morning, Family, Chai, Tiny Joys |
-| Motivation | Exam, Career, Comeback, First Step |
-| Kindness | Stranger, Elder, Stray, Mirror |
-| Art | Rangoli, Doodle, Poetry, Mehendi |
+## How to use it
 
-## 🚀 Open it
+### 1. Get a free AI key (one time only)
 
-- **Website:** https://govindaii.github.io/HazarHathKali/ (served by GitHub Pages from the `docs/` folder on `main`)
-- **On your computer:** open `docs/index.html` in any browser. No install or build step is needed.
+The hands need an "API key" to talk. Think of it as a password that lets the website use an AI service. Google gives one away for free:
 
-Get a free Gemini key at https://aistudio.google.com/apikey and paste it in when the app asks.
+1. Go to **https://aistudio.google.com/apikey**
+2. Sign in with your Google account.
+3. Tap **Create API key**.
+4. Copy the key. It is a long line of letters and numbers that starts with `AIza`.
 
-## 📁 Project structure
+### 2. Add your key to the website
 
-```
-docs/
-├── index.html     # Page layout
-├── styles.css     # Look and feel
-├── devi.js        # Draws the Devi and her 1000 hands
-├── hands.js       # The 1000 hands and their prompts
-├── providers.js   # Gemini / Claude / OpenAI streaming
-└── app.js         # Hand finder, chat and API key screen
-```
+1. Open the website.
+2. A box called **"Give the hands a voice"** appears. If it doesn't, tap **Add API key** at the top right.
+3. Choose **Google Gemini**.
+4. Paste your key into the **API key** box.
+5. Tap **Check key and connect**.
 
-## 🤝 Part of CyberGods Movement
+When the button at the top turns green, you are ready. Your key is saved only on your own phone or computer, and it is sent only to Google.
 
-This project is part of the **CyberGods** initiative: awakening your superconscious self through technology.
+### 3. Pick a hand and start chatting
 
-## 📜 License
+You can choose a hand in three ways:
 
-MIT License. Spread positivity freely! 🕉️
+- **Tap any hand** in the picture.
+- **Tap the Devi** herself to get a random hand.
+- **Scroll down to the list**. You can search for a word (like *chai*, *exam* or *sleep*) or pick a group (like *Humor* or *Wellness*).
+
+A chat window opens. Type how you feel or what you need, then tap **Send**. You can also tap one of the ready-made questions.
+
+### 4. Zoom in to see the hands
+
+The picture has 1000 hands, so each one is small at first.
+
+- **On a phone:** pinch with two fingers, or tap the **+** button.
+- **On a computer:** scroll with your mouse wheel, or click **+**.
+- **Drag** the picture to move around while zoomed in.
+- Tap **Fit** to see the whole Devi again.
+
+### Good to know
+
+- **Your chats are saved** on your device. Open the same hand later and your conversation is still there.
+- **Hands you have talked to** get a light ring around them in the picture.
+- **Want to see how a hand thinks?** In any chat, tap **"See this hand's prompt"** to read its instructions.
+- **Start a chat over:** open "See this hand's prompt" and tap **Clear conversation**.
+- **Change or remove your key:** tap the button at the top right.
+- **Other AI services:** you can also use a key from Anthropic Claude or OpenAI. Those are paid services.
+
+> These hands are here to cheer you up. They are not doctors or therapists. If you are going through something serious, please talk to someone you trust. In India, you can call the free Tele-MANAS helpline on **14416** at any time. In an emergency, call **112**.
+
+---
+
+## The 1000 hands
+
+There are 10 groups of hands, with 100 hands in each group. Every hand has a topic and a voice. For example, *Chai Friend* talks about small comforts like a warm friend, and *Exam Coach* helps you study like an energetic coach.
+
+| Group | Some of the topics |
+|-------|--------------------|
+| Spirituality | Gita, Kabir, Buddha, Rumi, Silence |
+| Science | Galaxies, the brain, space missions, light |
+| Wellness | Breathing, sleep, calm, screen breaks |
+| Nature | Sunrise, rain, lotus, mountains, rivers |
+| Music | Ragas, tabla, flute, feel-good songs |
+| Humor | Puns, family life, cricket, weddings |
+| Gratitude | Mornings, family, chai, tiny joys |
+| Motivation | Exams, careers, comebacks, first steps |
+| Kindness | Strangers, elders, animals, being kind to yourself |
+| Art | Rangoli, doodles, poems, mehendi |
+
+The 10 voices are: **Poet, Friend, Guru, Coach, Child, Yogi, Storyteller, Healer, Jester and Scholar.**
+
+---
+
+## For developers
+
+The whole website is in the `docs` folder. It is plain HTML, CSS and JavaScript, with no install or build step. To run it on your computer, open `docs/index.html` in a browser.
+
+| File | What it does |
+|------|--------------|
+| `docs/index.html` | The page layout |
+| `docs/styles.css` | Colours, fonts and layout |
+| `docs/devi.js` | Draws the Devi and her 1000 hands, and handles zoom |
+| `docs/hands.js` | The list of 1000 hands and the instructions (prompt) for each one |
+| `docs/providers.js` | Talks to Google Gemini, Anthropic Claude and OpenAI |
+| `docs/app.js` | Search, chat window and the API key box |
+
+The website is published with GitHub Pages from the `docs` folder on the `main` branch (**Settings → Pages**).
+
+---
+
+## License
+
+MIT License. Spread positivity freely.

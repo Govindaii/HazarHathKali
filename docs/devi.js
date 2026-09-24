@@ -472,57 +472,89 @@
     });
   }
 
-  // One of the thousand arms: a teal forearm, gold bangle and pink palm, reaching outwards.
-  function drawArm(c, X, Y, a, sp, dot, glow) {
-    const ca = Math.cos(a), sa = Math.sin(a);
-    const bx = X - ca * sp * 1.35, by = Y - sa * sp * 1.35;
-    const wx = X - ca * sp * 0.46, wy = Y - sa * sp * 0.46;
+  // One of the thousand hands: teal forearm, gold bangles, pink palm with four fingers and a thumb.
+  // Drawn in hand units (1 = spacing between hands); +x points outwards along the arm.
+  const FINGERS = [
+    // [offset across the palm, length, spread]
+    [-0.14, 0.25, -0.2],
+    [-0.05, 0.32, -0.07],
+    [0.05, 0.35, 0.05],
+    [0.14, 0.3, 0.18],
+  ];
+  function drawHand(c, X, Y, a, sp, ring, thumbSide, glow, dpr) {
+    c.save();
+    c.translate(X, Y);
+    c.rotate(a);
+    c.scale(sp, sp);
+    const px = 1 / sp; // one screen pixel in hand units
+    const outline = Math.max(0.045, 0.9 * px);
     c.lineCap = 'round';
-    c.strokeStyle = '#0b4f4b';
-    c.lineWidth = sp * 0.5;
+    c.lineJoin = 'round';
+
+    // Forearm
     c.beginPath();
-    c.moveTo(bx, by);
-    c.lineTo(wx, wy);
+    c.moveTo(-1.25, 0);
+    c.lineTo(-0.36, 0);
+    c.strokeStyle = '#0b4f4b';
+    c.lineWidth = 0.34 + outline * 2;
     c.stroke();
     c.strokeStyle = '#26a79d';
-    c.lineWidth = sp * 0.34;
+    c.lineWidth = 0.34;
     c.stroke();
+    // Bangles
     c.strokeStyle = '#e8b54a';
-    c.lineWidth = sp * 0.14;
-    const w = sp * 0.26;
-    c.beginPath();
-    c.moveTo(wx - sa * w, wy + ca * w);
-    c.lineTo(wx + sa * w, wy - ca * w);
-    c.stroke();
-    if (glow) {
-      c.save();
-      c.shadowColor = glow;
-      c.shadowBlur = sp * 1.4;
+    c.lineWidth = Math.max(0.06, 0.8 * px);
+    for (const u of [-0.45, -0.56]) {
+      c.beginPath();
+      c.moveTo(u, -0.19);
+      c.lineTo(u, 0.19);
+      c.stroke();
     }
-    c.fillStyle = '#d65b9c';
+
+    const t = thumbSide;
+    const digits = () => {
+      c.beginPath();
+      for (const [v, len, spread] of FINGERS) {
+        c.moveTo(0.02, v * t);
+        c.lineTo(0.02 + len * Math.cos(spread), (v + len * Math.sin(spread)) * t);
+      }
+      c.moveTo(-0.16, 0.16 * t);
+      c.lineTo(-0.16 + 0.22 * Math.cos(0.95), (0.16 + 0.22 * Math.sin(0.95)) * t);
+    };
+    if (glow) {
+      c.shadowColor = glow;
+      c.shadowBlur = sp * dpr * 0.9;
+    }
+    // Finger outlines, then the palm, then finger fills so they join the palm cleanly
     c.strokeStyle = '#8e2a62';
-    c.lineWidth = Math.max(0.6, sp * 0.05);
+    c.lineWidth = 0.1 + outline * 2;
+    digits();
+    c.stroke();
+    c.shadowBlur = 0;
+    c.fillStyle = '#d65b9c';
+    c.lineWidth = outline;
     c.beginPath();
-    c.ellipse(X + ca * sp * 0.3, Y + sa * sp * 0.3, sp * 0.24, sp * 0.3, a, 0, TAU);
+    c.ellipse(-0.12, 0, 0.27, 0.22, 0, 0, TAU);
     c.fill();
     c.stroke();
-    c.beginPath();
-    c.ellipse(X, Y, sp * 0.4, sp * 0.36, a, 0, TAU);
-    c.fill();
+    c.strokeStyle = '#d65b9c';
+    c.lineWidth = 0.1;
+    digits();
     c.stroke();
-    if (glow) c.restore();
+    // Palm centre, ringed in the realm's colour
+    c.beginPath();
+    c.arc(-0.12, 0, 0.1, 0, TAU);
     c.fillStyle = '#f6d6e6';
-    c.beginPath();
-    c.arc(X, Y, sp * 0.18, 0, TAU);
     c.fill();
-    c.strokeStyle = dot;
-    c.lineWidth = Math.max(0.8, sp * 0.08);
+    c.strokeStyle = ring;
+    c.lineWidth = Math.max(0.05, 1 * px);
     c.stroke();
+    c.restore();
   }
 
   /*
    * createDevi(canvas, hooks)
-   * hooks: count, sectors, colorOf(i), isOn(i), isMet(i), activeIndex(), reduceMotion
+   * hooks: count, sectors, colorOf(i), isOn(i), isMet(i), activeIndex(), reduceMotion, onViewChange(zoom, maxZoom)
    */
   function createDevi(canvas, hooks) {
     const ctx = canvas.getContext('2d');
@@ -530,14 +562,21 @@
     const bctx = base.getContext('2d');
     const { hands, spacing } = layoutHands(hooks.count, hooks.sectors);
     const byRadius = hands.map((_, i) => i).sort((p, q) => hands[q].r - hands[p].r);
+    // Her right hands (viewer's left) have thumbs toward her body; so do her left hands.
+    const thumbs = hands.map((p) => (Math.cos(p.a) < 0 ? 1 : -1));
     const INTRO_MS = hooks.reduceMotion ? 0 : 1600;
+    const narrowQuery = window.matchMedia('(max-width: 860px)');
     let w = 0, h = 0, dpr = 1, s = 1, ox = 0, oy = 0;
-    let hover = -1, hoverDevi = false, raf = 0;
+    let z = 1, tx = 0, ty = 0; // zoom and pan on top of the fitted view
+    let hover = -1, hoverDevi = false, raf = 0, dirty = true;
     const t0 = performance.now();
 
+    const S = () => s * z;
+    const OX = () => ox * z + tx;
+    const OY = () => oy * z + ty;
     function screen(i) {
       const p = hands[i];
-      return { X: ox + p.x * s, Y: oy + p.y * s, a: p.a };
+      return { X: OX() + p.x * S(), Y: OY() + p.y * S(), a: p.a };
     }
 
     function drawWall(c) {
@@ -553,49 +592,52 @@
     }
 
     function drawScene(c, progress) {
-      c.setTransform(dpr * s, 0, 0, dpr * s, dpr * ox, dpr * oy);
+      c.setTransform(dpr * S(), 0, 0, dpr * S(), dpr * OX(), dpr * OY());
       drawWall(c);
       c.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = spacing * s;
+      const sp = spacing * S();
+      const m = sp * 1.6;
       for (const i of byRadius) {
-        const k = progress == null ? 1 : Math.min(1, Math.max(0, (progress - (hands[i].r - FAN.r0) / (FAN.R - FAN.r0) * 0.75) / 0.25));
+        const k = progress == null ? 1 : Math.min(1, Math.max(0, (progress - ((hands[i].r - FAN.r0) / (FAN.R - FAN.r0)) * 0.75) / 0.25));
         if (k <= 0) continue;
+        const { X, Y, a } = screen(i);
+        if (X < -m || X > w + m || Y < -m || Y > h + m) continue;
         const on = hooks.isOn(i);
         c.globalAlpha = (on ? 1 : 0.16) * k;
-        const { X, Y, a } = screen(i);
         const reach = 1 - (1 - k) * 0.6;
-        drawArm(c, ox + (X - ox) * reach, oy + (Y - oy) * reach, a, sp, hooks.colorOf(i), null);
+        const hx = OX() + (X - OX()) * reach;
+        const hy = OY() + (Y - OY()) * reach;
+        drawHand(c, hx, hy, a, sp, hooks.colorOf(i), thumbs[i], null, dpr);
         if (on && hooks.isMet(i) && k === 1) {
           c.strokeStyle = '#fff4dc';
-          c.lineWidth = Math.max(1, sp * 0.09);
+          c.lineWidth = Math.max(1, sp * 0.07);
           c.beginPath();
-          c.ellipse(X, Y, sp * 0.52, sp * 0.48, a, 0, TAU);
+          c.ellipse(X + Math.cos(a) * sp * 0.05, Y + Math.sin(a) * sp * 0.05, sp * 0.52, sp * 0.46, a, 0, TAU);
           c.stroke();
         }
       }
       c.globalAlpha = 1;
-      c.setTransform(dpr * s, 0, 0, dpr * s, dpr * ox, dpr * oy);
+      c.setTransform(dpr * S(), 0, 0, dpr * S(), dpr * OX(), dpr * OY());
       drawFigure(c);
       c.setTransform(1, 0, 0, 1, 0, 0);
     }
 
     function renderBase() {
-      base.width = canvas.width;
-      base.height = canvas.height;
+      if (base.width !== canvas.width || base.height !== canvas.height) {
+        base.width = canvas.width;
+        base.height = canvas.height;
+      }
+      bctx.setTransform(1, 0, 0, 1, 0, 0);
       bctx.clearRect(0, 0, base.width, base.height);
       drawScene(bctx, null);
+      dirty = false;
     }
 
     function highlight(i, strong) {
       const { X, Y, a } = screen(i);
-      const sp = spacing * s * 1.9;
+      const sp = Math.max(spacing * S() * 2.4, 34);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drawArm(ctx, X, Y, a, sp, hooks.colorOf(i), strong ? '#f4b63f' : '#ffffff');
-      ctx.strokeStyle = strong ? '#f4b63f' : '#fff4dc';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.ellipse(X, Y, sp * 0.56, sp * 0.52, a, 0, TAU);
-      ctx.stroke();
+      drawHand(ctx, X, Y, a, sp, hooks.colorOf(i), thumbs[i], strong ? '#f4b63f' : '#ffffff', dpr);
     }
 
     function frame(now) {
@@ -606,11 +648,12 @@
       if (t < INTRO_MS) {
         drawScene(ctx, t / INTRO_MS);
       } else {
+        if (dirty) renderBase();
         ctx.drawImage(base, 0, 0);
       }
       // Third eye glow
       const pulse = hooks.reduceMotion ? 0.6 : 0.5 + 0.5 * Math.sin(now / 900);
-      ctx.setTransform(dpr * s, 0, 0, dpr * s, dpr * ox, dpr * oy);
+      ctx.setTransform(dpr * S(), 0, 0, dpr * S(), dpr * OX(), dpr * OY());
       const g = ctx.createRadialGradient(0, -103, 0, 0, -103, 12);
       g.addColorStop(0, `rgba(255,90,110,${0.25 + 0.35 * pulse})`);
       g.addColorStop(1, 'rgba(255,90,110,0)');
@@ -629,12 +672,105 @@
       if (active >= 0) highlight(active, true);
       if (hover >= 0 && hover !== active) highlight(hover, false);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      if (!hooks.reduceMotion || t < INTRO_MS) schedule();
+      if (!hooks.reduceMotion || t < INTRO_MS || dirty) schedule();
     }
 
     function schedule() {
       if (!raf) raf = requestAnimationFrame(frame);
     }
+
+    // ---------- Zoom and pan ----------
+    const maxZoom = () => Math.max(3, 90 / (spacing * s));
+    function clampView() {
+      if (z <= 1) {
+        z = 1;
+        tx = 0;
+        ty = 0;
+        return;
+      }
+      tx = Math.min(0, Math.max(w - w * z, tx));
+      ty = Math.min(0, Math.max(h - h * z, ty));
+    }
+    function viewChanged() {
+      clampView();
+      canvas.style.touchAction = z > 1 ? 'none' : 'pan-y';
+      dirty = true;
+      schedule();
+      if (hooks.onViewChange) hooks.onViewChange(z, maxZoom());
+    }
+    function zoomAt(factor, fx, fy) {
+      const z2 = Math.min(maxZoom(), Math.max(1, z * factor));
+      if (z2 === z) return;
+      tx = fx - (fx - tx) * (z2 / z);
+      ty = fy - (fy - ty) * (z2 / z);
+      z = z2;
+      viewChanged();
+    }
+
+    const pointers = new Map();
+    let gesture = null;
+    let dragged = false;
+    const local = (p) => {
+      const r = canvas.getBoundingClientRect();
+      return { x: p.x - r.left, y: p.y - r.top };
+    };
+    function startGesture() {
+      const pts = Array.from(pointers.values());
+      if (pts.length >= 2) {
+        const [a, b] = pts;
+        gesture = { pinch: true, d: Math.hypot(a.x - b.x, a.y - b.y) || 1, mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, z, tx, ty };
+      } else if (pts.length === 1) {
+        gesture = { pinch: false, sx: pts[0].x, sy: pts[0].y, tx, ty };
+      } else {
+        gesture = null;
+      }
+    }
+    canvas.addEventListener('pointerdown', (e) => {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 1) dragged = false;
+      else dragged = true;
+      if (e.pointerType === 'mouse') {
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* not capturable */ }
+      }
+      startGesture();
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!pointers.has(e.pointerId) || !gesture) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (gesture.pinch && pointers.size >= 2) {
+        const [a, b] = Array.from(pointers.values());
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        const z2 = Math.min(maxZoom(), Math.max(1, gesture.z * (d / gesture.d)));
+        const f = local(gesture.mid);
+        tx = f.x - (f.x - gesture.tx) * (z2 / gesture.z) + (mid.x - gesture.mid.x);
+        ty = f.y - (f.y - gesture.ty) * (z2 / gesture.z) + (mid.y - gesture.mid.y);
+        z = z2;
+        viewChanged();
+      } else if (!gesture.pinch) {
+        const dx = e.clientX - gesture.sx;
+        const dy = e.clientY - gesture.sy;
+        if (!dragged && Math.hypot(dx, dy) > 6) dragged = true;
+        if (dragged && z > 1) {
+          tx = gesture.tx + dx;
+          ty = gesture.ty + dy;
+          viewChanged();
+        }
+      }
+    });
+    const release = (e) => {
+      if (!pointers.delete(e.pointerId)) return;
+      startGesture();
+    };
+    canvas.addEventListener('pointerup', release);
+    canvas.addEventListener('pointercancel', release);
+    canvas.addEventListener('wheel', (e) => {
+      // On phones the page scrolls over the picture until the viewer zooms in.
+      if (narrowQuery.matches && z === 1 && !e.ctrlKey) return;
+      e.preventDefault();
+      const p = local({ x: e.clientX, y: e.clientY });
+      zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), p.x, p.y);
+    }, { passive: false });
 
     function resize() {
       const r = canvas.getBoundingClientRect();
@@ -646,14 +782,14 @@
       canvas.height = Math.round(h * dpr);
       const narrow = w < 560;
       const padTop = narrow ? 30 : 44;
-      const padBottom = narrow ? 30 : 40;
+      const padBottom = narrow ? 44 : 48;
       const bw = BOX.right - BOX.left;
       const bh = BOX.bottom - BOX.top;
       s = Math.min((w - 12) / bw, (h - padTop - padBottom) / bh);
       ox = w / 2;
       oy = padTop + (h - padTop - padBottom - bh * s) / 2 - BOX.top * s;
-      renderBase();
-      schedule();
+      z = Math.min(z, maxZoom());
+      viewChanged();
     }
 
     function pick(x, y, coarse) {
@@ -664,9 +800,9 @@
         const d = (p.X - x) * (p.X - x) + (p.Y - y) * (p.Y - y);
         if (d < bd) { bd = d; best = i; }
       }
-      const sp = spacing * s;
+      const sp = spacing * S();
       if (best >= 0 && bd <= (sp * 0.6) * (sp * 0.6)) return best;
-      if (covered((x - ox) / s, (y - oy) / s, 0)) return 'devi';
+      if (covered((x - OX()) / S(), (y - OY()) / S(), 0)) return 'devi';
       const tol = Math.max(sp * 0.9, coarse ? 18 : 10);
       return best >= 0 && bd <= tol * tol ? best : -1;
     }
@@ -674,7 +810,21 @@
     return {
       resize,
       pick,
-      refresh() { if (w) { renderBase(); schedule(); } },
+      wasDrag: () => dragged,
+      zoomIn() {
+        if (z > 1) {
+          zoomAt(1.8, w / 2, h / 2);
+          return;
+        }
+        // First step: centre on the hands at her upper right (viewer's left).
+        z = Math.min(maxZoom(), 1.8);
+        tx = w / 2 - (ox - 105 * s) * z;
+        ty = h / 2 - (oy - 125 * s) * z;
+        viewChanged();
+      },
+      zoomOut() { zoomAt(1 / 1.8, w / 2, h / 2); },
+      resetView() { z = 1; viewChanged(); },
+      refresh() { dirty = true; schedule(); },
       setHover(i, devi) {
         if (i === hover && devi === hoverDevi) return;
         hover = i;

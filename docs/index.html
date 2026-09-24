@@ -28,7 +28,12 @@
       <canvas id="devi" role="img" aria-label="Hazar Hath Kali: a turquoise Devi with a third eye, gold crown and red sari, holding a trishul and a sword, with a fan of 1000 hands spread behind her."></canvas>
       <p class="stage-label">Hazar Hath Kali<span class="stage-label-en"> · the thousand-handed Devi</span></p>
       <p class="stage-stats" id="stageStats">1000 hands · 0 met</p>
-      <p class="stage-hint">Tap a hand to talk. Tap the Devi for a random hand.</p>
+      <p class="stage-hint">Tap a hand to talk. Zoom in to see every hand.</p>
+      <div class="zoom" role="group" aria-label="Zoom">
+        <button type="button" id="zoomOut" aria-label="Zoom out" disabled>−</button>
+        <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
+        <button type="button" id="zoomFit" aria-label="Show the whole Devi" disabled>Fit</button>
+      </div>
       <div class="tip" id="tip" hidden></div>
     </section>
 
