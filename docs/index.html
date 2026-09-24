@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HazarHathKali</title>
+<meta name="description" content="Kali Maa's thousand hands: 1000 AI companions that spread positivity. Bring your own API key.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Eczar:wght@500;600;700&family=Mukta:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-name">HazarHathKali</span>
+      <span class="brand-hi" lang="hi">हज़ार हाथ काली</span>
+    </div>
+    <button type="button" class="conn" id="connBtn" aria-haspopup="dialog">
+      <span class="conn-dot" aria-hidden="true"></span>
+      <span id="connLabel">Add API key</span>
+    </button>
+  </header>
+
+  <main class="main">
+    <section class="stage" id="stage" aria-label="The thousand-petal lotus. Each petal is one hand.">
+      <canvas id="lotus" role="img" aria-label="A lotus of 1000 petals in ten coloured rings around a third eye. Each petal is a hand you can talk to."></canvas>
+      <p class="stage-label"><span lang="hi">सहस्रार</span><span class="stage-label-en"> · the thousand-petal lotus</span></p>
+      <p class="stage-stats" id="stageStats">1000 hands · 0 met</p>
+      <p class="stage-hint">Tap a petal to talk. Tap the eye for a random hand.</p>
+      <div class="tip" id="tip" hidden></div>
+    </section>
+
+    <aside class="side" aria-label="Find a hand">
+      <div class="intro">
+        <h1>Pick a hand. Start talking.</h1>
+        <p>Kali Maa has a thousand hands, and each one here is an AI companion with its own voice and purpose: calm, courage, laughter, gratitude and more.</p>
+      </div>
+
+      <label class="search">
+        <span class="visually-hidden">Search the hands</span>
+        <input id="search" type="search" placeholder="Search: chai, exam, raga, yogi, 512…" autocomplete="off">
+      </label>
+
+      <div class="realms" id="realms" role="group" aria-label="Filter by realm"></div>
+
+      <div class="list-head">
+        <span id="listCount" class="list-count">Showing all 1000</span>
+        <button type="button" class="ghost-btn" id="randomBtn">Random hand</button>
+      </div>
+      <ol class="hand-list" id="handList"></ol>
+      <button type="button" class="ghost-btn more" id="moreBtn" hidden>Show more</button>
+    </aside>
+  </main>
+</div>
+
+<aside class="chat" id="chat" aria-labelledby="chatName" aria-hidden="true">
+  <header class="chat-head">
+    <span class="badge" id="chatBadge" aria-hidden="true"></span>
+    <div class="chat-title">
+      <h2 id="chatName">Hand</h2>
+      <p id="chatMeta"></p>
+    </div>
+    <button type="button" class="icon-btn" id="closeChat" aria-label="Close chat">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+  <details class="prompt" id="promptBox">
+    <summary>See this hand's prompt</summary>
+    <pre id="promptText"></pre>
+    <div class="prompt-actions">
+      <button type="button" class="ghost-btn" id="copyPrompt">Copy prompt</button>
+      <button type="button" class="ghost-btn" id="clearChat">Clear conversation</button>
+    </div>
+  </details>
+  <div class="messages" id="messages" aria-live="polite"></div>
+  <div class="starters" id="starters"></div>
+  <form class="composer" id="composer">
+    <label class="visually-hidden" for="input">Your message</label>
+    <textarea id="input" rows="1" placeholder="Write to this hand…" autocomplete="off"></textarea>
+    <button type="submit" class="send" id="sendBtn">Send</button>
+    <button type="button" class="send stop" id="stopBtn" hidden>Stop</button>
+  </form>
+  <p class="chat-foot" id="chatFoot"></p>
+</aside>
+
+<dialog class="keys" id="keyDialog" aria-labelledby="keyTitle">
+  <form method="dialog" id="keyForm" novalidate>
+    <h2 id="keyTitle">Give the hands a voice</h2>
+    <p class="keys-lead">The hands speak through an AI model. Choose a provider and paste your API key.</p>
+    <p class="keys-warn" id="keyWarn" hidden></p>
+    <fieldset class="providers" id="providerList">
+      <legend class="visually-hidden">AI provider</legend>
+    </fieldset>
+    <div class="key-fields" id="keyFields">
+      <label for="keyInput">API key <a id="keyLink" href="#" target="_blank" rel="noopener">Get a key</a></label>
+      <div class="key-row">
+        <input id="keyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your key">
+        <button type="button" class="ghost-btn" id="toggleKey">Show</button>
+      </div>
+      <label for="modelInput">Model</label>
+      <input id="modelInput" list="modelList" autocomplete="off" spellcheck="false">
+      <datalist id="modelList"></datalist>
+      <label class="check"><input type="checkbox" id="rememberKey" checked> Remember on this device</label>
+    </div>
+    <p class="keys-note" id="keyNote">Your key stays in this browser. It is sent only to the provider you choose.</p>
+    <p class="keys-status" id="keyStatus" role="status"></p>
+    <div class="keys-actions">
+      <button type="button" class="ghost-btn danger" id="forgetKey" hidden>Remove key</button>
+      <span class="spacer"></span>
+      <button type="button" class="ghost-btn" id="laterBtn">Later</button>
+      <button type="submit" class="primary" id="connectBtn">Connect</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="hands.js"></script>
+<script src="providers.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
