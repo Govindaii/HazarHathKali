@@ -1,11 +1,11 @@
 /*
  * HazarHathKali web UI.
- * The lotus canvas, the hand finder, the chat drawer and the API key dialog.
+ * The Devi canvas, the hand finder, the chat drawer and the API key dialog.
  */
 (function () {
   'use strict';
 
-  const { HANDS, CATEGORIES, toDevanagari, buildSystemPrompt, greeting, providers, providerOrder } = window.HHK;
+  const { HANDS, CATEGORIES, buildSystemPrompt, greeting, providers, providerOrder } = window.HHK;
   const $ = (id) => document.getElementById(id);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const inArtifact = !!(window.claude && typeof window.claude.use === 'function');
@@ -104,239 +104,17 @@
     return html;
   }
 
-  // ---------- The lotus ----------
-  const lotus = (function () {
-    const canvas = $('lotus');
-    const ctx = canvas.getContext('2d');
-    const base = document.createElement('canvas');
-    const bctx = base.getContext('2d');
-    const GOLDEN = Math.PI * (3 - Math.sqrt(5));
-    const BLOOM_MS = reduceMotion ? 0 : 1500;
-    let w = 0, h = 0, dpr = 1, cx = 0, cy = 0, rIn = 0, rOut = 0, size = 10;
-    let pts = [];
-    let hover = -1;
-    let hoverEye = false;
-    let t0 = performance.now();
-    let raf = 0;
-
-    function layout() {
-      const narrow = w < 560;
-      const padY = narrow ? 34 : 48;
-      const R = Math.max(40, Math.min(w - 16, h - padY * 2) / 2);
-      cx = w / 2;
-      cy = h / 2;
-      rOut = R;
-      rIn = R * 0.2;
-      size = Math.sqrt((Math.PI * (rOut * rOut - rIn * rIn)) / HANDS.length);
-      // Sunflower (golden-angle) spiral of 1000 points, then cut into 10 arms by angle:
-      // each realm gets one arm, and its hands run from the centre outwards.
-      const raw = HANDS.map((_, i) => {
-        const t = (i + 0.5) / HANDS.length;
-        const r = Math.sqrt(rIn * rIn + (rOut * rOut - rIn * rIn) * t);
-        const a = i * GOLDEN;
-        const fromTop = (((a + Math.PI / 2) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-        return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a), a, r, fromTop };
-      });
-      raw.sort((p, q) => p.fromTop - q.fromTop);
-      const perArm = HANDS.length / CATEGORIES.length;
-      pts = [];
-      for (let c = 0; c < CATEGORIES.length; c++) {
-        raw.slice(c * perArm, (c + 1) * perArm)
-          .sort((p, q) => p.r - q.r)
-          .forEach((p, k) => { pts[c * perArm + k] = p; });
-      }
-    }
-
-    function petal(c, i, scale, alpha) {
-      const p = pts[i];
-      const hand = HANDS[i];
-      c.globalAlpha = alpha;
-      c.fillStyle = colorOf(hand, (hand.vi - 4.5) * 1.6);
-      c.beginPath();
-      c.ellipse(p.x, p.y, (size * 0.5) * scale, (size * 0.24) * scale, p.a, 0, Math.PI * 2);
-      c.fill();
-      if (state.visited.has(hand.n) && alpha > 0.5) {
-        c.globalAlpha = 0.95;
-        c.strokeStyle = '#fff4dc';
-        c.lineWidth = Math.max(1, size * 0.07);
-        c.stroke();
-      }
-    }
-
-    function isOn(i) {
-      return !state.matchSet || state.matchSet.has(HANDS[i].n);
-    }
-
-    function renderBase() {
-      base.width = canvas.width;
-      base.height = canvas.height;
-      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      bctx.clearRect(0, 0, w, h);
-      for (let i = 0; i < pts.length; i++) petal(bctx, i, 1, isOn(i) ? 0.92 : 0.12);
-      bctx.globalAlpha = 1;
-    }
-
-    function drawEye(t) {
-      const E = rIn * 0.82;
-      const glow = reduceMotion ? 0.6 : 0.5 + 0.5 * Math.sin(t / 900);
-      // Disc
-      const g = ctx.createRadialGradient(cx, cy - E * 0.3, E * 0.1, cx, cy, E);
-      g.addColorStop(0, '#382c72');
-      g.addColorStop(1, '#120d24');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(cx, cy, E, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = hoverEye ? '#ffd27a' : 'rgba(244,182,63,0.85)';
-      ctx.lineWidth = hoverEye ? 2.5 : 1.5;
-      ctx.stroke();
-      // Crescent moon
-      ctx.strokeStyle = '#f4b63f';
-      ctx.lineWidth = Math.max(1.5, E * 0.08);
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.arc(cx, cy - E * 0.52, E * 0.22, Math.PI * 0.12, Math.PI * 0.88);
-      ctx.stroke();
-      // Third eye
-      const top = cy - E * 0.22, bottom = cy + E * 0.58, mid = cy + E * 0.18, half = E * 0.3;
-      ctx.save();
-      ctx.shadowColor = 'rgba(255,90,110,0.9)';
-      ctx.shadowBlur = (8 + 14 * glow);
-      ctx.fillStyle = '#e23a4f';
-      ctx.beginPath();
-      ctx.moveTo(cx, top);
-      ctx.quadraticCurveTo(cx + half * 2, mid, cx, bottom);
-      ctx.quadraticCurveTo(cx - half * 2, mid, cx, top);
-      ctx.fill();
-      ctx.restore();
-      ctx.fillStyle = '#f4b63f';
-      ctx.beginPath();
-      ctx.arc(cx, mid, E * 0.13, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#120d24';
-      ctx.beginPath();
-      ctx.arc(cx, mid, E * 0.06, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function drawArm(i, strong) {
-      const p = pts[i];
-      const hand = HANDS[i];
-      const ang = Math.atan2(p.y - cy, p.x - cx);
-      const sx = cx + Math.cos(ang) * rIn * 0.85;
-      const sy = cy + Math.sin(ang) * rIn * 0.85;
-      const grad = ctx.createLinearGradient(sx, sy, p.x, p.y);
-      grad.addColorStop(0, 'rgba(244,182,63,0)');
-      grad.addColorStop(1, strong ? 'rgba(244,182,63,0.9)' : 'rgba(244,231,209,0.55)');
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = strong ? 2 : 1.25;
-      ctx.beginPath();
-      ctx.moveTo(sx, sy);
-      ctx.lineTo(p.x, p.y);
-      ctx.stroke();
-      ctx.save();
-      ctx.shadowColor = colorOf(hand);
-      ctx.shadowBlur = 16;
-      petal(ctx, i, 2.1, 1);
-      ctx.restore();
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = strong ? '#f4b63f' : '#fff4dc';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.ellipse(p.x, p.y, size * 1.05, size * 0.5, p.a, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    function frame(now) {
-      raf = 0;
-      const t = now - t0;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
-      // Halo behind the lotus
-      const pulse = reduceMotion ? 0.5 : 0.5 + 0.5 * Math.sin(now / 1400);
-      const halo = ctx.createRadialGradient(cx, cy, rIn * 0.5, cx, cy, rOut * 1.08);
-      halo.addColorStop(0, `rgba(226,58,79,${0.2 + 0.06 * pulse})`);
-      halo.addColorStop(0.55, 'rgba(90,50,160,0.10)');
-      halo.addColorStop(1, 'rgba(13,10,20,0)');
-      ctx.fillStyle = halo;
-      ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = 'rgba(244,182,63,0.18)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(cx, cy, rOut + size * 0.9, 0, Math.PI * 2);
-      ctx.stroke();
-
-      if (t < BLOOM_MS) {
-        const perPetal = (BLOOM_MS - 400) / pts.length;
-        for (let i = 0; i < pts.length; i++) {
-          const k = Math.min(1, Math.max(0, (t - i * perPetal) / 400));
-          if (k <= 0) break;
-          const ease = 1 - Math.pow(1 - k, 3);
-          petal(ctx, i, ease, (isOn(i) ? 0.92 : 0.12) * ease);
-        }
-        ctx.globalAlpha = 1;
-      } else {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.drawImage(base, 0, 0);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-
-      const activeIdx = state.active ? state.active.n - 1 : -1;
-      if (activeIdx >= 0) drawArm(activeIdx, true);
-      if (hover >= 0 && hover !== activeIdx) drawArm(hover, false);
-      drawEye(now);
-      ctx.globalAlpha = 1;
-
-      if (!reduceMotion || t < BLOOM_MS) schedule();
-    }
-
-    function schedule() {
-      if (!raf) raf = requestAnimationFrame(frame);
-    }
-
-    function resize() {
-      const r = canvas.getBoundingClientRect();
-      if (!r.width || !r.height) return;
-      w = r.width;
-      h = r.height;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      layout();
-      renderBase();
-      schedule();
-    }
-
-    function pick(x, y, coarse) {
-      if (Math.hypot(x - cx, y - cy) < rIn * 0.85) return 'eye';
-      let best = -1;
-      let bd = Infinity;
-      for (let i = 0; i < pts.length; i++) {
-        if (!isOn(i)) continue;
-        const dx = pts[i].x - x;
-        const dy = pts[i].y - y;
-        const d = dx * dx + dy * dy;
-        if (d < bd) { bd = d; best = i; }
-      }
-      const tol = Math.max(size * 0.8, coarse ? 18 : 10);
-      return bd <= tol * tol ? best : -1;
-    }
-
-    return {
-      canvas,
-      resize,
-      pick,
-      refresh() { renderBase(); schedule(); },
-      setHover(i, eye) {
-        if (i === hover && eye === hoverEye) return;
-        hover = i;
-        hoverEye = eye;
-        schedule();
-      },
-      point(i) { return pts[i]; },
-      redraw: schedule,
-    };
-  })();
+  // ---------- The Devi and her thousand hands (drawn in devi.js) ----------
+  const deviCanvas = $('devi');
+  const devi = window.HHK.createDevi(deviCanvas, {
+    count: HANDS.length,
+    sectors: CATEGORIES.length,
+    colorOf: (i) => colorOf(HANDS[i]),
+    isOn: (i) => !state.matchSet || state.matchSet.has(HANDS[i].n),
+    isMet: (i) => state.visited.has(HANDS[i].n),
+    activeIndex: () => (state.active ? state.active.n - 1 : -1),
+    reduceMotion,
+  });
 
   // ---------- Stage interactions ----------
   const stage = $('stage');
@@ -344,18 +122,18 @@
   let lastPointer = 'mouse';
 
   function stageXY(e) {
-    const r = lotus.canvas.getBoundingClientRect();
+    const r = deviCanvas.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   }
 
-  lotus.canvas.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType || 'mouse'; });
-  lotus.canvas.addEventListener('pointermove', (e) => {
+  deviCanvas.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType || 'mouse'; });
+  deviCanvas.addEventListener('pointermove', (e) => {
     if (e.pointerType && e.pointerType !== 'mouse') return;
     const { x, y } = stageXY(e);
-    const hit = lotus.pick(x, y, false);
+    const hit = devi.pick(x, y, false);
     const idx = typeof hit === 'number' ? hit : -1;
-    lotus.setHover(idx, hit === 'eye');
-    lotus.canvas.classList.toggle('is-pointing', hit !== -1);
+    devi.setHover(idx, hit === 'devi');
+    deviCanvas.classList.toggle('is-pointing', hit !== -1);
     if (hit === -1) {
       tip.hidden = true;
       return;
@@ -363,13 +141,13 @@
     tip.textContent = '';
     const strong = document.createElement('strong');
     const meta = document.createElement('span');
-    if (hit === 'eye') {
-      strong.textContent = 'The third eye';
-      meta.textContent = 'Opens a random hand';
+    if (hit === 'devi') {
+      strong.textContent = 'Hazar Hath Kali';
+      meta.textContent = 'Tap the Devi for a random hand';
     } else {
       const hand = HANDS[idx];
       strong.textContent = hand.name;
-      meta.textContent = `#${hand.n} · ${hand.voice.en} · ${hand.cat.en} ${hand.cat.hi}`;
+      meta.textContent = `Hand ${hand.n} · ${hand.voice.en} · ${hand.cat.en}`;
     }
     tip.append(strong, meta);
     tip.hidden = false;
@@ -379,20 +157,20 @@
     tip.style.left = Math.max(8, tx) + 'px';
     tip.style.top = Math.max(8, ty) + 'px';
   });
-  lotus.canvas.addEventListener('pointerleave', () => {
-    lotus.setHover(-1, false);
+  deviCanvas.addEventListener('pointerleave', () => {
+    devi.setHover(-1, false);
     tip.hidden = true;
   });
-  lotus.canvas.addEventListener('click', (e) => {
+  deviCanvas.addEventListener('click', (e) => {
     const { x, y } = stageXY(e);
-    const hit = lotus.pick(x, y, lastPointer !== 'mouse');
+    const hit = devi.pick(x, y, lastPointer !== 'mouse');
     tip.hidden = true;
-    if (hit === 'eye') openRandom();
+    if (hit === 'devi') openRandom();
     else if (hit >= 0) openChat(HANDS[hit]);
   });
 
-  if (window.ResizeObserver) new ResizeObserver(() => lotus.resize()).observe(stage);
-  else window.addEventListener('resize', () => lotus.resize());
+  if (window.ResizeObserver) new ResizeObserver(() => devi.resize()).observe(stage);
+  else window.addEventListener('resize', () => devi.resize());
 
   // ---------- Finder: realms, search and list ----------
   const realmsEl = $('realms');
@@ -400,7 +178,7 @@
 
   function renderRealms() {
     realmsEl.textContent = '';
-    const make = (id, label, sub, color, count) => {
+    const make = (id, label, color, count) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'realm' + (id === 'all' ? ' all' : '');
@@ -413,17 +191,15 @@
       name.className = 'realm-name';
       const bl = document.createElement('b');
       bl.textContent = label;
-      const sm = document.createElement('small');
-      sm.textContent = sub;
-      name.append(bl, sm);
+      name.append(bl);
       const c = document.createElement('span');
       c.className = 'realm-count';
       c.textContent = count;
       b.append(sw, name, c);
       realmsEl.append(b);
     };
-    make('all', 'All realms', 'सभी · every hand', 'conic-gradient(' + CATEGORIES.map((c) => catColor(c)).join(',') + ')', 1000);
-    CATEGORIES.forEach((c) => make(c.id, c.hi, c.en, catColor(c), 100));
+    make('all', 'All realms', 'conic-gradient(' + CATEGORIES.map((c) => catColor(c)).join(',') + ')', 1000);
+    CATEGORIES.forEach((c) => make(c.id, c.en, catColor(c), 100));
   }
   realmsEl.addEventListener('click', (e) => {
     const b = e.target.closest('.realm');
@@ -441,9 +217,7 @@
       h.name.toLowerCase().includes(q) ||
       h.angle.toLowerCase().includes(q) ||
       h.cat.en.toLowerCase().includes(q) ||
-      h.cat.hi.includes(q) ||
-      h.voice.en.toLowerCase().includes(q) ||
-      h.voice.hi.includes(q)
+      h.voice.en.toLowerCase().includes(q)
     );
   }
 
@@ -455,7 +229,7 @@
   function applyFilter() {
     const list = filteredHands();
     state.matchSet = list.length === HANDS.length ? null : new Set(list.map((h) => h.n));
-    lotus.refresh();
+    devi.refresh();
     renderList(list);
   }
 
@@ -480,14 +254,14 @@
       const num = document.createElement('span');
       num.className = 'hand-num';
       num.style.background = colorOf(h);
-      num.textContent = toDevanagari(h.n);
+      num.textContent = h.n;
       num.title = 'Hand ' + h.n;
       const text = document.createElement('span');
       text.className = 'hand-text';
       const bn = document.createElement('b');
       bn.textContent = h.name;
       const sm = document.createElement('small');
-      sm.textContent = `#${h.n} · ${h.voice.en} ${h.voice.hi} · ${h.cat.en}`;
+      sm.textContent = `${h.voice.en} · ${h.cat.en}`;
       text.append(bn, sm);
       b.append(num, text);
       li.append(b);
@@ -757,15 +531,15 @@
     if (!state.visited.has(h.n)) {
       state.visited.add(h.n);
       write('localStorage', 'hhk:visited', Array.from(state.visited));
-      lotus.refresh();
+      devi.refresh();
       updateStats();
     }
     const badge = $('chatBadge');
-    badge.textContent = toDevanagari(h.n);
+    badge.textContent = h.n;
     badge.style.background = colorOf(h);
     badge.title = 'Hand ' + h.n;
     $('chatName').textContent = h.name;
-    $('chatMeta').textContent = `Hand ${h.n} · ${h.voice.en} ${h.voice.hi} · ${h.cat.en} ${h.cat.hi}`;
+    $('chatMeta').textContent = `Hand ${h.n} · ${h.voice.en} · ${h.cat.en}`;
     $('promptText').textContent = buildSystemPrompt(h);
     $('promptBox').open = false;
     renderMessages();
@@ -773,7 +547,7 @@
     chat.classList.add('is-open');
     chat.setAttribute('aria-hidden', 'false');
     renderList();
-    lotus.redraw();
+    devi.redraw();
     if (window.matchMedia('(pointer: fine)').matches) setTimeout(() => input.focus(), 50);
   }
 
@@ -783,7 +557,7 @@
     chat.setAttribute('aria-hidden', 'true');
     state.active = null;
     renderList();
-    lotus.redraw();
+    devi.redraw();
   }
   $('closeChat').addEventListener('click', closeChat);
   document.addEventListener('keydown', (e) => {
@@ -1016,7 +790,7 @@
   renderList();
   renderConn();
   updateStats();
-  lotus.resize();
+  devi.resize();
 
   if (inArtifact) {
     window.claude.use('sample').then((sample) => {

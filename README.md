@@ -70,7 +70,7 @@ HazarHathKali/
 
 ## 🪷 Web App: Talk to the 1000 Hands
 
-The `docs/` folder is a web app (no install needed). Kali Maa's 1000 hands appear as a thousand-petal lotus, and each petal opens a chat with its own AI companion.
+The `docs/` folder is a web app (no install needed). It shows Hazar Hath Kali as in her temple murti (turquoise face, third eye, gold crown, red sari, trishul and sword) with a fan of 1000 hands behind her. Tap any hand to chat with its own AI companion.
 
 - **10 realms × 10 focuses × 10 voices = 1000 unique hands** (e.g. *Chai Friend*, *Raga Yogi*, *Exam Coach*)
 - Every hand has a structured, prompt-engineered system prompt with its mission, voice, reply shape and safety rules (see "See this hand's prompt" in any chat)
@@ -80,7 +80,7 @@ The `docs/` folder is a web app (no install needed). Kali Maa's 1000 hands appea
 - On your computer: open `docs/index.html` in a browser.
 - As a website: in GitHub go to **Settings → Pages**, set *Source* to **Deploy from a branch**, pick **main** and the **/docs** folder, then Save. The site appears at `https://govindaii.github.io/HazarHathKali/`.
 
-Code map: `docs/hands.js` (the 1000 hands and prompt builder), `docs/providers.js` (Gemini / Claude / OpenAI streaming), `docs/app.js` (lotus, chat, key dialog), `docs/styles.css`.
+Code map: `docs/hands.js` (the 1000 hands and prompt builder), `docs/devi.js` (draws the Devi and her 1000 hands), `docs/providers.js` (Gemini / Claude / OpenAI streaming), `docs/app.js` (finder, chat, key dialog), `docs/styles.css`.
 
 ## 🤝 Part of CyberGods Movement
 

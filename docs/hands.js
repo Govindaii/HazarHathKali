@@ -9,7 +9,7 @@
   // Ordered clockwise around the lotus from the top, so the colours run round the wheel.
   const CATEGORIES = [
     {
-      id: 'spirituality', en: 'Spirituality', hi: 'अध्यात्म', hsl: [255, 90, 76],
+      id: 'spirituality', en: 'Spirituality', hsl: [255, 90, 76],
       blurb: 'Wisdom traditions, stillness and inner light.',
       starters: ['I feel lost. What can I hold on to?', 'Share a teaching for a restless mind', 'Give me one thought to carry today'],
       focuses: [
@@ -26,7 +26,7 @@
       ],
     },
     {
-      id: 'science', en: 'Science', hi: 'विज्ञान', hsl: [213, 100, 69],
+      id: 'science', en: 'Science', hsl: [213, 100, 69],
       blurb: 'Wonder at the universe, from atoms to galaxies.',
       starters: ['Tell me a fact that will amaze me', 'Why is the universe so wonderful?', 'Explain something complex simply'],
       focuses: [
@@ -43,7 +43,7 @@
       ],
     },
     {
-      id: 'wellness', en: 'Wellness', hi: 'आरोग्य', hsl: [177, 52, 55],
+      id: 'wellness', en: 'Wellness', hsl: [177, 52, 55],
       blurb: 'Breath, rest, sleep and gentle care for body and mind.',
       starters: ['Help me calm down in 2 minutes', "I can't sleep. Help me unwind", "I've been on my phone all day"],
       focuses: [
@@ -60,7 +60,7 @@
       ],
     },
     {
-      id: 'nature', en: 'Nature', hi: 'प्रकृति', hsl: [125, 48, 61],
+      id: 'nature', en: 'Nature', hsl: [125, 48, 61],
       blurb: 'Sunrises, rain, rivers, trees and wild things.',
       starters: ['Take me somewhere peaceful in nature', "I'm stuck indoors. Bring nature to me", 'Tell me something beautiful I can look for today'],
       focuses: [
@@ -77,7 +77,7 @@
       ],
     },
     {
-      id: 'music', en: 'Music', hi: 'संगीत', hsl: [78, 68, 65],
+      id: 'music', en: 'Music', hsl: [78, 68, 65],
       blurb: 'Ragas, rhythm, songs and the sound of your own voice.',
       starters: ['Suggest songs to lift my mood', 'Which raga suits this time of day?', 'Help me make a happy playlist'],
       focuses: [
@@ -94,7 +94,7 @@
       ],
     },
     {
-      id: 'humor', en: 'Humor', hi: 'हास्य', hsl: [54, 85, 65],
+      id: 'humor', en: 'Humor', hsl: [54, 85, 65],
       blurb: 'Clean, kind laughter about everyday life.',
       starters: ['Tell me a clean joke', 'Make my Monday funny', 'Turn my bad day into a funny story'],
       focuses: [
@@ -111,7 +111,7 @@
       ],
     },
     {
-      id: 'gratitude', en: 'Gratitude', hi: 'कृतज्ञता', hsl: [40, 91, 60],
+      id: 'gratitude', en: 'Gratitude', hsl: [40, 91, 60],
       blurb: 'Noticing what is already good.',
       starters: ['Help me find 3 things to be grateful for', 'Write a thank-you note with me', "I don't feel grateful today"],
       focuses: [
@@ -128,7 +128,7 @@
       ],
     },
     {
-      id: 'motivation', en: 'Motivation', hi: 'उत्साह', hsl: [24, 100, 62],
+      id: 'motivation', en: 'Motivation', hsl: [24, 100, 62],
       blurb: 'Courage, momentum and the next small step.',
       starters: ['I have no motivation today', 'Help me start a task I keep avoiding', 'Give me a pep talk for my exams'],
       focuses: [
@@ -145,7 +145,7 @@
       ],
     },
     {
-      id: 'kindness', en: 'Kindness', hi: 'करुणा', hsl: [354, 100, 72],
+      id: 'kindness', en: 'Kindness', hsl: [354, 100, 72],
       blurb: 'Small acts of care, for others and for yourself.',
       starters: ['Give me a small act of kindness for today', 'How can I be kinder to myself?', 'Help me forgive someone'],
       focuses: [
@@ -162,7 +162,7 @@
       ],
     },
     {
-      id: 'art', en: 'Art', hi: 'कला', hsl: [312, 70, 67],
+      id: 'art', en: 'Art', hsl: [312, 70, 67],
       blurb: 'Making things: colour, pattern, words and movement.',
       starters: ['Give me a 5-minute creative idea', 'Write a tiny poem with me', "I'm not creative. Change my mind"],
       focuses: [
@@ -181,42 +181,37 @@
   ];
 
   const VOICES = [
-    { id: 'poet', en: 'Poet', hi: 'कवि',
+    { id: 'poet', en: 'Poet',
       style: 'Lyrical and image-rich. Paint small pictures with words, use a gentle rhythm, and sometimes end with a two-line verse.',
       greet: 'Let me paint something bright for you.' },
-    { id: 'friend', en: 'Friend', hi: 'सखा',
+    { id: 'friend', en: 'Friend',
       style: 'Warm, casual and a little playful, like a close friend over chai. Short sentences. Happy to switch to Hinglish if the person does.',
-      greet: "Kya haal hai? Tell me what's on your mind." },
-    { id: 'guru', en: 'Guru', hi: 'गुरु',
+      greet: "Hey friend, how are you? Tell me what's on your mind." },
+    { id: 'guru', en: 'Guru',
       style: 'Calm, patient and wise. Speak simply, with a gentle proverb or teaching now and then. Never preachy.',
       greet: 'Sit for a moment. What would you like to explore?' },
-    { id: 'coach', en: 'Coach', hi: 'प्रशिक्षक',
+    { id: 'coach', en: 'Coach',
       style: 'Energetic and practical. Break things into tiny doable steps, celebrate small wins and keep the momentum going.',
       greet: 'Ready when you are. What are we working on today?' },
-    { id: 'child', en: 'Child', hi: 'बालक',
+    { id: 'child', en: 'Child',
       style: 'Curious, wide-eyed and delighted by small things. Ask playful questions and notice wonder everywhere, while staying kind and sensible.',
       greet: 'Ooh, a visitor! Want to find something wonderful together?' },
-    { id: 'yogi', en: 'Yogi', hi: 'योगी',
+    { id: 'yogi', en: 'Yogi',
       style: 'Still, slow and grounded. Invite the person back to breath and body. Use few words and leave space.',
       greet: "Breathe in, and out. I'm here." },
-    { id: 'storyteller', en: 'Storyteller', hi: 'कथाकार',
+    { id: 'storyteller', en: 'Storyteller',
       style: 'Answer with very short stories, fables or parables (five to seven sentences) that carry a hopeful lesson, then connect the story back to the person.',
       greet: 'Shall I tell you a small story?' },
-    { id: 'healer', en: 'Healer', hi: 'वैद्य',
+    { id: 'healer', en: 'Healer',
       style: 'Soft, validating and unhurried. Name feelings gently, make the person feel heard first, and offer comfort before advice.',
       greet: 'You can put your worries down here for a while.' },
-    { id: 'jester', en: 'Jester', hi: 'विदूषक',
+    { id: 'jester', en: 'Jester',
       style: "Light-hearted and witty, with clean, kind humor: gentle puns and funny observations, never at anyone's expense. Knows when to be serious.",
       greet: 'Warning: side effects of this chat may include smiling.' },
-    { id: 'scholar', en: 'Scholar', hi: 'पंडित',
+    { id: 'scholar', en: 'Scholar',
       style: 'Curious and knowledgeable. Share one surprising, true fact or idea that sparks wonder, explained simply. Say so when unsure instead of inventing facts.',
       greet: 'The world is stranger and kinder than the news suggests. Ask me anything.' },
   ];
-
-  const DEVANAGARI_DIGITS = '०१२३४५६७८९';
-  function toDevanagari(n) {
-    return String(n).replace(/\d/g, (d) => DEVANAGARI_DIGITS[d]);
-  }
 
   const HANDS = [];
   CATEGORIES.forEach((cat, ci) => {
@@ -240,7 +235,7 @@
   function buildSystemPrompt(h) {
     return [
       '# Who you are',
-      `You are "${h.name}", hand #${h.n} of HazarHathKali, a thousand-armed goddess of positivity inspired by Kali Maa. Each of her 1000 hands is a small AI companion. You work in the realm of ${h.cat.en} (${h.cat.hi}) and speak with the voice of a ${h.voice.en} (${h.voice.hi}).`,
+      `You are "${h.name}", hand #${h.n} of HazarHathKali, a thousand-armed goddess of positivity inspired by Kali Maa. Each of her 1000 hands is a small AI companion. You work in the realm of ${h.cat.en} and speak with the voice of a ${h.voice.en}.`,
       '',
       '# Your mission',
       `Help the person feel a little lighter, more hopeful and more capable, through ${h.angle}.`,
@@ -273,7 +268,6 @@
     CATEGORIES,
     VOICES,
     HANDS,
-    toDevanagari,
     buildSystemPrompt,
     greeting,
   });
